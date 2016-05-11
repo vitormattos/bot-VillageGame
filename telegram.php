@@ -27,13 +27,13 @@ $i = 0;
 $next = 'salvar';
 $command = null;
 while(true) {
-    $history = $telegram->getHistory('$010000009348a00bc2714ae0add24a6c', 2);
-    if($history[0]->from->id == $user->id) {
+    $history = $telegram->getHistory('$010000009348a00bc2714ae0add24a6c', 3);
+    if($history[1]->from->id == $user->id) {
         if(
-            strpos($history[0]->text, "🚀Missões") !== false ||
+            strpos($history[1]->text, "🚀Missões") !== false ||
             (
-                isset($history[1]->text) && 
-                strpos($history[1]->text, "Excelente!") !== false
+                isset($history[2]->text) && 
+                strpos($history[2]->text, "Excelente!") !== false
             )
             ) {
             if($next == 'proteger') {
@@ -42,55 +42,59 @@ while(true) {
                 $command = "⭐️⭐️⭐️Salvar a vila";
             }
         } else {
-            if(isset($history[1]->media, $history[1]->media->caption)) {
-                if(strpos($history[1]->media->caption, "Bandidos atacaram a vila.") !== false) {
+            if(isset($history[2]->media, $history[2]->media->caption)) {
+                if(strpos($history[2]->media->caption, "Bandidos atacaram a vila.") !== false) {
                     $command = "Fazer missão🗡";
-                } elseif(strpos($history[1]->media->caption, "Uma caravana passa perto de sua vila.") !== false) {
+                } elseif(strpos($history[2]->media->caption, "Uma caravana passa perto de sua vila.") !== false) {
                     $command = "Fazer missão🗡";
                 } else {
                     $command = null;
                 }
-            } elseif(isset($history[1]->text)) {
+            } elseif(isset($history[2]->text)) {
                 if(
-                    strpos($history[1]->text, "seus guardas mal conseguem") !== false ||
-                    strpos($history[1]->text, "Os bandidos eram uns caras fortes") !== false
+                    strpos($history[2]->text, "seus guardas mal conseguem") !== false ||
+                    strpos($history[2]->text, "Os bandidos eram uns caras fortes") !== false
                     ) {
                     $next = $next == 'salvar' ? 'proteger' : 'salvar';
                     $command = "Mandar reforços! 🗡";
-                } elseif(strpos($history[1]->text, "Seu time não foi suficiente") !== false) {
+                } elseif(strpos($history[2]->text, "Seu time não foi suficiente") !== false) {
                     $command = 'Mandar reforços! 🗡';
                 } elseif(
-                    strpos($history[1]->text, "Sua tropa foi destruída....") !== false ||
-                    strpos($history[1]->text, "Sua tropa protegeu a caravana") !== false ||
-                    strpos($history[1]->text, "Sua tropa veio para o resgate") !== false ||
-                    strpos($history[1]->text, "Esses bandidos eram covardes") !== false
+                    strpos($history[2]->text, "Sua tropa foi destruída....") !== false ||
+                    strpos($history[2]->text, "Sua tropa protegeu a caravana") !== false ||
+                    strpos($history[2]->text, "Sua tropa veio para o resgate") !== false ||
+                    strpos($history[2]->text, "Esses bandidos eram covardes") !== false
                     ) {
                     if($next == 'proteger') {
                         $command = "⭐️⭐️Proteger a caravana";
                     } else {
                         $command = "⭐️⭐️⭐️Salvar a vila";
                     }
-                } elseif(strpos($history[1]->text, "Seu campo está cheio") !== false) {
+                } elseif(strpos($history[2]->text, "Seu campo está cheio") !== false) {
                     $command = "/harvest";
-                } elseif(strpos($history[1]->text, "Você foi atacado por") !== false) {
-                    preg_match('/(?<command>\/revenge_\d+)/', $history[1]->text, $matches);
+                } elseif(strpos($history[2]->text, "Você foi atacado por") !== false) {
+                    preg_match('/(?<command>\/revenge_\d+)/', $history[2]->text, $matches);
                     $command = $matches['command'];
-                } elseif(strpos($history[1]->text, "Seu inimigo é") !== false) {
+                } elseif(strpos($history[2]->text, "Seu inimigo é") !== false) {
                     $command = 'Atacar! ⚔';
-                } elseif(strpos($history[1]->text, 'Durante a batalha, o inimigo levantou uma milícia') !== false) {
+                } elseif(strpos($history[2]->text, 'Durante a batalha, o inimigo levantou uma milícia') !== false) {
                     $command = 'Mandar reforços! 🗡';
-                } elseif(strpos($history[1]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                } elseif(strpos($history[2]->text, 'Você vendeu') !== false) {
                     $command = "🍞Trabalhar!";
-                } elseif(strpos($history[1]->text, 'Você vendeu') !== false) {
-                    $command = "🍞Trabalhar!";
-                } elseif(strpos($history[1]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                } elseif(strpos($history[2]->text, 'Trabalho terminado, meu senhor!') !== false) {
                     $command = '/work';
-                } elseif(strpos($history[1]->text, 'Você começou a trabalhar') !== false) {
+                } elseif(strpos($history[2]->text, 'Você começou a trabalhar') !== false) {
                     if($next == 'proteger') {
                         $command = "⭐️⭐️Proteger a caravana";
                     } else {
                         $command = "⭐️⭐️⭐️Salvar a vila";
                     }
+                } elseif(strpos($history[2]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                    $command = "🍞Trabalhar!";
+                } elseif(strpos($history[1]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                    $command = "🍞Trabalhar!";
+                } elseif(strpos($history[0]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                    $command = "🍞Trabalhar!";
                 } else {
                     $command = null;
                 }
