@@ -79,6 +79,12 @@ while(true) {
                     $command = 'Atacar! ⚔';
                 } elseif(strpos($history[2]->text, 'Durante a batalha, o inimigo levantou uma milícia') !== false) {
                     $command = 'Mandar reforços! 🗡';
+                } elseif(strpos($history[2]->text, 'Você pode lutar contra outros jogadores') !== false) {
+                    if($next == 'proteger') {
+                        $command = "⭐️⭐️Proteger a caravana";
+                    } else {
+                        $command = "⭐️⭐️⭐️Salvar a vila";
+                    }
                 } elseif(strpos($history[2]->text, 'Você vendeu') !== false) {
                     $command = "🍞Trabalhar!";
                 } elseif(strpos($history[2]->text, 'Trabalho terminado, meu senhor!') !== false) {
