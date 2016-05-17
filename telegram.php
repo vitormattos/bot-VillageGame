@@ -26,9 +26,18 @@ if(!$user) {
 $i = 0;
 $next = 'salvar';
 $command = null;
+$pause = false;
 while(true) {
     $history = $telegram->getHistory('$010000009348a00bc2714ae0add24a6c', 3);
-    if($history[1]->from->id == $user->id) {
+    if($history[1]->from->id == $user->id || $history[2]->from->id == $user->id) {
+        if($history[1]->text == "pause" || $history[1]->text == "stop") {
+            $command = null;
+            $pause = true;
+        }
+        if($history[1]->text == "start") {
+            $pause = false;
+        }
+        if(!$pause)
         if(
             strpos($history[1]->text, "🚀Missões") !== false ||
             (
@@ -57,6 +66,8 @@ while(true) {
                     ) {
                     $next = $next == 'salvar' ? 'proteger' : 'salvar';
                     $command = "Mandar reforços! 🗡";
+                } elseif(strpos($history[2]->text, "A caravana foi atacada e seus guardas mal conseguem") !== false) {
+                    $command = 'Mandar reforços! 🗡';
                 } elseif(strpos($history[2]->text, "Seu time não foi suficiente") !== false) {
                     $command = 'Mandar reforços! 🗡';
                 } elseif(
@@ -70,6 +81,8 @@ while(true) {
                     } else {
                         $command = "⭐️⭐️⭐️Salvar a vila";
                     }
+                } elseif(strpos($history[1]->text, "Seu campo está cheio") !== false) {
+                    $command = "/harvest";
                 } elseif(strpos($history[2]->text, "Seu campo está cheio") !== false) {
                     $command = "/harvest";
                 } elseif(strpos($history[2]->text, "Você foi atacado por") !== false) {
@@ -79,7 +92,10 @@ while(true) {
                     $command = 'Atacar! ⚔';
                 } elseif(strpos($history[2]->text, 'Durante a batalha, o inimigo levantou uma milícia') !== false) {
                     $command = 'Mandar reforços! 🗡';
-                } elseif(strpos($history[2]->text, 'Você pode lutar contra outros jogadores') !== false) {
+                } elseif(
+                    strpos($history[2]->text, 'Você pode lutar contra outros jogadores') !== false ||
+                    strpos($history[2]->text, 'Você pode escolher uma missão') !== false
+                    ) {
                     if($next == 'proteger') {
                         $command = "⭐️⭐️Proteger a caravana";
                     } else {
@@ -97,10 +113,16 @@ while(true) {
                     }
                 } elseif(strpos($history[2]->text, 'Trabalho terminado, meu senhor!') !== false) {
                     $command = "🍞Trabalhar!";
-                } elseif(strpos($history[1]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                } elseif(isset($history[1]->text) && strpos($history[1]->text, 'Trabalho terminado, meu senhor!') !== false) {
                     $command = "🍞Trabalhar!";
-                } elseif(strpos($history[0]->text, 'Trabalho terminado, meu senhor!') !== false) {
+                } elseif(isset($history[0]->text) && strpos($history[0]->text, 'Trabalho terminado, meu senhor!') !== false) {
                     $command = "🍞Trabalhar!";
+                } elseif($history[1]->text == "start") {
+                    if($next == 'proteger') {
+                        $command = "⭐️⭐️Proteger a caravana";
+                    } else {
+                        $command = "⭐️⭐️⭐️Salvar a vila";
+                    }
                 } else {
                     $command = null;
                 }
@@ -111,7 +133,11 @@ while(true) {
         $telegram->msg('$010000009348a00bc2714ae0add24a6c', $command);
         echo "$i -> $command -> $next\n";
     } else {
-        echo "$i -> no command -> $next\n";
+        if($pause) {
+            echo "$i -> pause -> $next\n";
+        } else {
+            echo "$i -> no command -> $next\n";
+        }
     }
     $i++;
     sleep(rand(3, 5));
