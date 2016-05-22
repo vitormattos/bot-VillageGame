@@ -1,7 +1,7 @@
 <?php
 require 'config.php';
 do {
-    if(!shell_exec('pgrep telegram-cli')) {
+    if(!shell_exec('ps ux | grep "telegram.*json" | grep -v "grep"')) {
         $cmd = $config['telegram.cli']['path'].
             (isset($config['telegram.cli']['rsa-key'])
                 ?' --rsa-key '.$config['telegram.cli']['rsa-key']

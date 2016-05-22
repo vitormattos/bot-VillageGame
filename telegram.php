@@ -26,8 +26,15 @@ if(!$user) {
 $i = 0;
 $next = 'salvar';
 $command = null;
-$pause = false;
+$text = null;
 $send_statistic = false;
+$estatistica = [
+    'start' => new DateTime(),
+    'salvar' => 0,
+    'proteger' => 0,
+    'reforcos' => 0,
+    'ataque' => 0
+];
 $config = [
     '🚀Missões' => [
         'text' => 'return @$history[$position]->text;',
@@ -68,6 +75,12 @@ $config = [
             preg_match('/(?<command>\/revenge_\d+)/', $text, $matches);
             $command = $matches['command'];
         }
+    ],
+    'atacar' => [
+        'to_search' => ['Seu inimigo é'],
+        'text' => 'return @$history[$position]->text;',
+        'position' => [2],
+        'command' => 'Atacar!⚔'
     ],
     'start_2' => [
         'to_search' =>[
@@ -114,12 +127,6 @@ $config = [
             $command = 'Mandar reforços! 🗡';
         }
     ],
-    'atacar' => [
-        'to_search' => ['Seu inimigo é'],
-        'text' => 'return @$history[$position]->text;',
-        'position' => [2],
-        'command' => 'Atacar!⚔'
-    ],
     [
         'to_search' => ['Trabalho terminado, meu senhor!'],
         'text' => 'return @$history[$position]->text;',
@@ -162,8 +169,6 @@ $config = [
     ]
 ];
 $telegram->msg('$010000009348a00bc2714ae0add24a6c', '/refresh_data');
-$send_statistic = false;
-$command=$text=null;
 while(true) {
     $history = $telegram->getHistory('$010000009348a00bc2714ae0add24a6c', 1);
     if(isset($history[0]->text)) {
@@ -174,13 +179,6 @@ while(true) {
         }
     }
 }
-$estatistica = [
-    'start' => new DateTime(),
-    'salvar' => 0,
-    'proteger' => 0,
-    'reforcos' => 0,
-    'ataque' => 0
-];
 $send_statistic = true;
 while(true) {
     $history = $telegram->getHistory('$010000009348a00bc2714ae0add24a6c', 3);
@@ -225,7 +223,7 @@ while(true) {
             $telegram->msg($user->id,
                 "Nível:{$matches['nivel']} {$matches['percent']}\n".
                 "Ouro: ".($matches['ouro'] - $estatistica['about_my_village']['ouro'])." Total: {$matches['ouro']}\n".
-                "Medalhas: +".($matches['medalhas'] - $estatistica['about_my_village']['medalhas'])."\n".
+                "Medalhas: {$estatistica['about_my_village']['medalhas']} +".($matches['medalhas'] - $estatistica['about_my_village']['medalhas'])."\n".
                 "Salvar: {$estatistica['salvar']}\n".
                 "Proteger: {$estatistica['proteger']}\n".
                 "Reforços: {$estatistica['reforcos']}\n".
